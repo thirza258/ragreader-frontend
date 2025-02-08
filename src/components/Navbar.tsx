@@ -1,5 +1,13 @@
+import service from "../services/service";
+
 const NavBar: React.FC = () => {
-    const handleStartOver = () => {
+    const handleStartOver = async () => {
+      try {
+        await service.cleanSystem();
+      } catch (error) {
+        console.error("Error cleaning system:", error);
+        alert("Failed to clean system.");
+      }
       window.location.href = "/";
     };
 

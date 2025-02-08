@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import service from '../services/service';
 
-const AI_MODELS = ['Gemini', 'Mistral', 'Claude', 'OpenAI'];
+const AI_MODELS = ['OpenAI', 'Mistral', 'Claude'];
 
 interface FileSubmitProps {
   setFile: (file: File | null) => void;
@@ -14,7 +14,15 @@ interface FileSubmitProps {
 
 const FileSubmit: React.FC<FileSubmitProps> = ({ setFile, modelName, setModelName,  vectorNumber, setVectorNumber}) => {
   const [fileLocal, setFileLocal] = useState<File | null>(null);
+  const [url, setUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [submitType, setSubmitType] = useState<'file' | 'url'>('file');
+
+const handleModelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  setModelName(event.target.value);
+  console.log("Model changed to:", event.target.value);
+};
+
 
   const navigate = useNavigate();
 
@@ -27,21 +35,29 @@ const FileSubmit: React.FC<FileSubmitProps> = ({ setFile, modelName, setModelNam
   };
 
   const handleSubmit = async () => {
-    if (!fileLocal) {
+    if (submitType === 'file' && !fileLocal) {
       alert("Please upload a file before submitting.");
+      return;
+    }
+
+    if (submitType === 'url' && !url) {
+      alert("Please enter a URL before submitting.");
       return;
     }
 
     try {
       setIsLoading(true);
-      // Replace with your actual service call
-      const response = await service.submitFile(fileLocal, modelName, vectorNumber);
-      console.log("File submitted successfully:", response);
-      alert("File submitted successfully!");
+      console.log("Submitting:", submitType, modelName, vectorNumber);
+      const response = submitType === 'file' 
+        ? await service.submitFile(fileLocal as File, modelName, vectorNumber) 
+        : await service.submitURL(url, modelName, vectorNumber);
+      
+      console.log("Submission successful:", response);
+      alert("Submitted successfully!");
       navigate("/main");
     } catch (error) {
-      console.error("Error submitting file:", error);
-      alert("Failed to submit the file.");
+      console.error("Error submitting:", error);
+      alert("Failed to submit.");
     } finally {
       setIsLoading(false);
     }
@@ -50,44 +66,64 @@ const FileSubmit: React.FC<FileSubmitProps> = ({ setFile, modelName, setModelNam
   return (
     <div className="card max-w-md mx-auto p-6 border rounded shadow-md">
       <div className="text-center mb-6">
-        <h2 className="text-xl font-bold">RAGReader File Upload</h2>
+        <h2 className="text-xl font-bold">RAGReader Upload</h2>
       </div>
       
       <div className="space-y-4">
         <div className="mb-4">
-          <label htmlFor="file-upload" className="block text-sm font-medium mb-2">
-            Upload File:
-          </label>
-          <input
-            id="file-upload"
-            type="file"
-            onChange={handleFileChange}
+          <label className="block text-sm font-medium mb-2">Submit Type:</label>
+          <select
+            title="Submit Type"
+            value={submitType}
+            onChange={(e) => setSubmitType(e.target.value as 'file' | 'url')}
             className="w-full border rounded p-2"
-          />
+          >
+            <option value="file">Upload File</option>
+            <option value="url">Submit URL</option>
+          </select>
         </div>
 
+        {submitType === 'file' && (
+          <div className="mb-4">
+            <label htmlFor="file-upload" className="block text-sm font-medium mb-2">Upload File:</label>
+            <input
+              id="file-upload"
+              type="file"
+              onChange={handleFileChange}
+              className="w-full border rounded p-2"
+            />
+          </div>
+        )}
+
+        {submitType === 'url' && (
+          <div className="mb-4">
+            <label htmlFor="url-input" className="block text-sm font-medium mb-2">Enter URL:</label>
+            <input
+              id="url-input"
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              className="w-full border rounded p-2"
+            />
+          </div>
+        )}
+
         <div className="mb-4">
-          <label htmlFor="model-select" className="block text-sm font-medium mb-2">
-            Select AI Model:
-          </label>
+          <label htmlFor="model-select" className="block text-sm font-medium mb-2">Select AI Model:</label>
           <select
             id="model-select"
             value={modelName}
-            onChange={(e) => setModelName(e.target.value)}
+            onChange={handleModelChange}
             className="w-full border rounded p-2"
           >
             {AI_MODELS.map((model) => (
-              <option key={model} value={model}>
-                {model}
-              </option>
+              <option key={model} value={model}>{model}</option>
             ))}
           </select>
         </div>
 
         <div className="mb-4">
-          <label htmlFor="vector-select" className="block text-sm font-medium mb-2">
-            Select number of results:
-          </label>
+          <label htmlFor="vector-select" className="block text-sm font-medium mb-2">Select number of results:</label>
           <select
             id="vector-select"
             value={vectorNumber}
@@ -95,9 +131,7 @@ const FileSubmit: React.FC<FileSubmitProps> = ({ setFile, modelName, setModelNam
             className="w-full border rounded p-2"
           >
             {[...Array(9)].map((_, i) => (
-              <option key={i + 2} value={i + 2}>
-                {i + 2}
-              </option>
+              <option key={i + 2} value={i + 2}>{i + 2}</option>
             ))}
           </select>
         </div>
