@@ -33,8 +33,6 @@ function StepOne({
 
 function StepTwo({
   file,
-  modelName,
-  vectorNumber,
 }: {
   file: File | null;
   modelName: string;

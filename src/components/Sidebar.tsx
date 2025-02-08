@@ -1,15 +1,13 @@
 import React from "react";
 import  DocViewer,  {DocViewerRenderers } from "@cyntler/react-doc-viewer";
 
-const Sidebar: React.FC = ({ files }) => {
+interface SidebarProps {
+  files: File[];
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ files }) => {
   if (!files || files.length === 0) {
     return <p className="text-gray-500 text-sm">No files available.</p>;
-  }
-
-  interface File {
-    name: string;
-    size: number;
-    type: string;
   }
 
   const docFiles: { uri: string }[] = files.map((file: File) => ({ uri: URL.createObjectURL(file) }));
@@ -20,17 +18,17 @@ const Sidebar: React.FC = ({ files }) => {
         
         <h2 className="mb-4 text-xl">File</h2>
         <div className="overflow-y-auto max-h-[100vh] p-4 bg-white shadow rounded-lg border border-gray-300">
-          {files.map((file, index) => (
+            {files.map((file: File, index: number) => (
             <div key={index} className="mb-4 p-4 bg-gray-100 rounded-lg">
               <h3 className="font-bold text-lg mb-2">{file.name}</h3>
               <p className="text-sm text-gray-700 mb-2">
-                <strong>Size:</strong> {(file.size / 1024).toFixed(2)} KB
+              <strong>Size:</strong> {(file.size / 1024).toFixed(2)} KB
               </p>
               <p className="text-sm text-gray-700 mb-2">
-                <strong>Type:</strong> {file.type}
+              <strong>Type:</strong> {file.type}
               </p>
             </div>
-          ))}
+            ))}
           <DocViewer
             documents={docFiles}
             pluginRenderers={DocViewerRenderers}
