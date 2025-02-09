@@ -1,1 +1,1 @@
-export const apiBaseUrl = "https://ragreader-d3rr7.ondigitalocean.app/";
+export const apiBaseUrl = "https://ragreader-d3rr7.ondigitalocean.app";
