@@ -7,12 +7,14 @@ import Sidebar from "./components/Sidebar";
 
 function StepOne({
   setFile,
+  setUrl,
   modelName,
   vectorNumber,
   setModelName,
   setVectorNumber,
 }: {
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
+  setUrl: React.Dispatch<React.SetStateAction<string | null>>;
   modelName: string;
   vectorNumber: number;
   setModelName: React.Dispatch<React.SetStateAction<string>>;
@@ -21,6 +23,7 @@ function StepOne({
   return (
     <div>
       <FileSubmit
+        setUrl={setUrl}
         setFile={setFile}
         modelName={modelName}
         vectorNumber={vectorNumber}
@@ -33,16 +36,16 @@ function StepOne({
 
 function StepTwo({
   file,
+  url,
 }: {
   file: File | null;
-  modelName: string;
-  vectorNumber: number;
+  url: string | null;
 }) {
   return (
     <div className="h-screen flex flex-col">
       <NavBar />
       <div className="flex flex-grow overflow-hidden">
-        <Sidebar files={file ? [file] : []} />
+        <Sidebar files={file ? [file] : []} url={url || ""} />
         <div className="flex-grow overflow-y-auto bg-white p-4">
           <Chatbot />
         </div>
@@ -50,11 +53,11 @@ function StepTwo({
     </div>
   );
 }
-
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [modelName, setModelName] = useState("OpenAI");
   const [vectorNumber, setVectorNumber] = useState(2);
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("Updated modelName in App:", modelName);
@@ -69,6 +72,7 @@ function App() {
           element={
             <StepOne
               setFile={setFile}
+              setUrl={setUrl}
               modelName={modelName}
               vectorNumber={vectorNumber}
               setModelName={setModelName}
@@ -81,8 +85,7 @@ function App() {
           element={
             <StepTwo
               file={file}
-              modelName={modelName}
-              vectorNumber={vectorNumber}
+              url={url}
             />
           }
         />
