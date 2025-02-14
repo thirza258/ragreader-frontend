@@ -2,6 +2,7 @@ import axios from "axios";
 import { apiBaseUrl } from "../constant";
 
 const submitFile = async (file: File, modelName: string, vectorNumber: number) => {
+    console.log(import.meta.env.VITE_PRODUCTION_MODE);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("model_name", modelName);
