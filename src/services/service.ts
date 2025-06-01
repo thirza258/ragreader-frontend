@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const isProduction = import.meta.env.VITE_PRODUCTION_MODE?.toLowerCase() === "true";
-const apiBaseUrl = isProduction ? "https://ragreader-d3rr7.ondigitalocean.app" : "http://localhost:8000";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
 
 const submitFile = async (file: File, modelName: string, vectorNumber: number) => {
     console.log(import.meta.env.VITE_PRODUCTION_MODE);

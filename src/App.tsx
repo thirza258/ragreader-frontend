@@ -60,8 +60,6 @@ function App() {
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("Updated modelName in App:", modelName);
-    console.log("Updated vectorNumber in App:", vectorNumber);
   }, [modelName, vectorNumber]);
 
   return (

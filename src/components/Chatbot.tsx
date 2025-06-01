@@ -22,18 +22,14 @@ function Chatbot() {
       try {
         const response: ChatResponse = await service.generateChat(input);
 
-        let aiMessage = response.data.ai_message_1 !== null ? response.data.ai_message_1 : response.data.ai_message_2;
-
-        if (aiMessage === "Warning" && response.data.ai_message_2 !== null) {
-          aiMessage = response.data.ai_message_2;
+        if (response.status !== 200) {
+          throw new Error(response.message);
         }
 
-        if (aiMessage === "") {
-          aiMessage = "Sorry, I didn't understand that.";
-        }
+
         setMessages((prevMessages) => [
           ...prevMessages,
-          { text: aiMessage, user: "bot" },
+          { text: response.data, user: "bot" },
         ]);
       } catch (error) {
         console.error("Error fetching AI response:", error);
